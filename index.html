@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Railway Ticket System</title>
+</head>
+<body>
+    <h1>Railway Ticket Search</h1>
+    <form action="/search" method="GET">
+        <label for="departure_station">Departure Station:</label>
+        <input type="text" name="departure_station" id="departure_station" required>
+        <br>
+        <label for="arrival_station">Arrival Station:</label>
+        <input type="text" name="arrival_station" id="arrival_station" required>
+        <br>
+        <label for="departure_date">Departure Date:</label>
+        <input type="date" name="departure_date" id="departure_date" required>
+        <br>
+        <input type="submit" value="Search">
+    </form>
+
+    <h2>Search Results</h2>
+    <div id="search_results"></div>
+
+    <script>
+        // JavaScript для обработки результатов поиска и покупки билетов
+        function buyTicket(train_id, seat_number, user_id) {
+            // Выполнить запрос на покупку билета
+            fetch('http://127.0.0.1:5000/buy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    train_id: train_id,
+                    seat_number: seat_number,
+                    user_id: user_id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert('Ticket purchased successfully');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function displaySearchResults(results) {
+            const resultsDiv = document.getElementById('search_results');
+            resultsDiv.innerHTML = '';
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = 'No available trains found for the specified criteria.';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr>
+                    <th>Train ID</th>
+                    <th>Departure Date</th>
+                    <th>Available Seats</th>
+                    <th>Action</th>
+                </tr>
+            `;
+
+            results.forEach(train => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${train.train_id}</td>
+                    <td>${train.departure_date}</td>
+                    <td>${train.available_tickets}</td>
+                    <td>
+                        <button onclick="buyTicket('${train.train_id}', '${train.seat_number}', 'user123')">Buy Ticket</button>
+                    </td>
+                `;
+
+                table.appendChild(row);
+            });
+
+            resultsDiv.appendChild(table);
+        }
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const departureStation = document.getElementById('departure_station').value;
+            const arrivalStation = document.getElementById('arrival_station').value;
+            const departureDate = document.getElementById('departure_date').value;
+
+            fetch(`http://127.0.0.1:5000/search?departure_station=${departureStation}&arrival_station=${arrivalStation}&departure_date=${departureDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    displaySearchResults(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>

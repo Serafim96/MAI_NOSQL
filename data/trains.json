@@ -1,0 +1,28 @@
+{
+  "trains": [
+    {
+      "id": 1,
+      "route_id": 1,
+      "departure_date": "2023-12-20",
+      "available_tickets": 50
+    },
+    {
+      "id": 2,
+      "route_id": 1,
+      "departure_date": "2023-12-21",
+      "available_tickets": 30
+    },
+    {
+      "id": 3,
+      "route_id": 2,
+      "departure_date": "2023-12-20",
+      "available_tickets": 40
+    },
+    {
+      "id": 4,
+      "route_id": 2,
+      "departure_date": "2023-12-21",
+      "available_tickets": 20
+    }
+  ]
+}
